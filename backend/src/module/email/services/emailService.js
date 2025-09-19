@@ -29,15 +29,31 @@ const sendEmail = async (to, subject, text, html) => {
   }
 };
 
-const sendEmployeeCredentials = async (email, name, password) => {
-  const subject = 'Your Employee Account Credentials';
-  const text = `Hello ${name},\n\nYour account has been created. Here are your login credentials:\n\nEmail: ${email}\nPassword: ${password}\n\nPlease change your password after first login.\n\nRegards,\nEmployee Management Team`;
-  const html = `<p>Hello ${name},</p><p>Your account has been created. Here are your login credentials:</p><p><strong>Email:</strong> ${email}<br><strong>Password:</strong> ${password}</p><p>Please change your password after first login.</p><p>Regards,<br>Employee Management Team</p>`;
+
+
+const sendOTPEmail = async (email, otp) => {
+  const subject = 'Your OTP Code - Employee Login';
+  const text = `Your OTP code for login is: ${otp}\n\nThis code will expire in 5 minutes.\n\nRegards,\nEmployee Management Team`;
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2>Employee Login OTP</h2>
+      <p>Your OTP code for login is:</p>
+      <div style="background-color: #f0f0f0; padding: 20px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 3px; margin: 20px 0;">
+        ${otp}
+      </div>
+      <p>This code will expire in 5 minutes.</p>
+      <p>If you didn't request this code, please ignore this email.</p>
+      <br>
+      <p>Regards,<br>Employee Management Team</p>
+    </div>
+  `;
 
   await sendEmail(email, subject, text, html);
 };
 
+
+
 module.exports = {
   sendEmail,
-  sendEmployeeCredentials,
+  sendOTPEmail
 };

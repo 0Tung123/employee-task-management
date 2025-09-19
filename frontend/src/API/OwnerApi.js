@@ -9,13 +9,27 @@ export const sendAccessCode = async (phoneNumber) => {
   return response.json();
 };
 
-export const validateAccessCode = async (phoneNumber, accessCode) => {
+export const validateAccessCode = async (phoneNumber, accessCode, name = null) => {
+  const body = { phoneNumber, accessCode };
+  if (name) body.name = name;
+
   const response = await fetch(`${API_BASE}/sms/validate-access-code`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ phoneNumber, accessCode }),
+    body: JSON.stringify(body),
   });
-  return response.json();
+  
+  const result = await response.json();
+  
+  // If login successful, save token and owner info to localStorage
+  if (result.success && result.token) {
+    localStorage.setItem('token', result.token);
+    localStorage.setItem('phoneNumber', result.owner.phoneNumber);
+    localStorage.setItem('userName', result.owner.name);
+    localStorage.setItem('userRole', result.owner.role);
+  }
+  
+  return result;
 };
 
 export const loginWithEmail = async (email, password) => {
@@ -63,5 +77,62 @@ export const deleteEmployee = async (id) => {
   const response = await fetch(`${API_BASE}/employees/${id}`, {
     method: 'DELETE',
   });
+  return response.json();
+};
+
+// Authentication utilities
+export const getToken = () => localStorage.getItem('token');
+
+export const getUser = () => {
+  const token = getToken();
+  const phoneNumber = localStorage.getItem('phoneNumber');
+  const userName = localStorage.getItem('userName');
+  const userRole = localStorage.getItem('userRole');
+  
+  if (!token) return null;
+  
+  return {
+    token,
+    phoneNumber,
+    name: userName,
+    role: userRole
+  };
+};
+
+export const logout = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('phoneNumber');
+  localStorage.removeItem('userName');
+  localStorage.removeItem('userRole');
+};
+
+export const isAuthenticated = () => {
+  return !!getToken();
+};
+
+// Protected API call with authentication
+export const fetchWithAuth = async (url, options = {}) => {
+  const token = getToken();
+  
+  if (!token) {
+    throw new Error('No authentication token found');
+  }
+  
+  const headers = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`,
+    ...options.headers
+  };
+  
+  const response = await fetch(`${API_BASE}${url}`, {
+    ...options,
+    headers
+  });
+  
+  if (response.status === 401 || response.status === 403) {
+    logout(); // Clear invalid token
+    throw new Error('Authentication failed');
+  }
+  
   return response.json();
 };
