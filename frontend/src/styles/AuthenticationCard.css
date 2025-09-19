@@ -1,0 +1,204 @@
+.auth-card {
+  width: 360px;
+  height: 379px;
+  border-radius: 4px;
+  background: #FFFFFF;
+  box-shadow: 0px 3px 6px 0px #120F281F;
+  margin: 0 auto;
+  box-sizing: border-box;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-card-title {
+  position: absolute;
+  top: 46px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Manrope';
+  font-weight: 700;
+  font-size: 25px;
+  line-height: 19px;
+  color: #000000;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.auth-card p {
+  position: absolute;
+  top: 86px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 251px;
+  font-family: 'Manrope';
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 18px;
+  color: #A0A0A0;
+  margin: 0;
+  text-align: center;
+  word-wrap: break-word;
+}
+
+.auth-card input {
+  position: absolute;
+  top: 144px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 299px;
+  height: 44px;
+  border-radius: 4px;
+  background: #FFFFFF;
+  border: 1px solid #9095A1;
+  box-sizing: border-box;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 18px;
+  padding: 13px 16px;
+  outline: none;
+}
+
+.auth-card input::placeholder {
+  color: #BDC1CA;
+  font-family: 'Manrope';
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.auth-card button {
+  position: absolute;
+  top: 219px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 300px;
+  height: 38px;
+  background: #006AFF;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  font-family: 'Manrope', sans-serif;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 19px;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-card button:hover {
+  background: #0056b3;
+}
+
+.auth-card button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.auth-card .message {
+  position: absolute;
+  top: 268px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  text-align: center;
+  font-size: 12px;
+  color: red;
+  margin: 0;
+}
+
+.auth-card .message.success {
+  color: green;
+}
+
+.auth-card .bottom-text {
+  position: absolute;
+  top: 271px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 234px;
+  font-family: 'Manrope';
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 22px;
+  color: #565D6D;
+  margin: 0;
+  text-align: center;
+  word-wrap: break-word;
+}
+
+.resend-link {
+  position: absolute;
+  top: 70%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 84%;
+  font-family: 'Manrope';
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 22px;
+}
+
+.resend-link a {
+  font-family: 'Manrope';
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 22px;
+  color: #006AFF;
+  text-decoration: none;
+  margin: 0;
+  display: inline-block;
+  text-align: left;
+}
+
+.resend-link a:hover {
+  text-decoration: underline;
+}
+
+.auth-card-footer {
+  position: absolute;
+  top: 336px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 234px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 5px;
+}
+
+.auth-card-footer .footer-text {
+  position: absolute;
+  left: 30%;
+  transform: translateX(-50%);
+  width: 90%;
+  font-family: 'Manrope';
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 22px;
+  color: #565D6D;
+  margin: 0;
+}
+
+.auth-card-footer a {
+  position: absolute;
+  right: 38%;
+  font-family: 'Manrope';
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 22px;
+  color: #006AFF;
+  text-decoration: none;
+  margin: 0;
+}
+
+.auth-card-footer a:hover {
+  text-decoration: underline;
+}

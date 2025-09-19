@@ -3,6 +3,8 @@ const express = require('express');
 const cors = require('cors');
 
 const { db } = require('./configs/firebase.config');
+const smsRoutes = require('./module/sms/routes/smsRoutes');
+const employeeRoutes = require('./module/employee/routes/employeeRoutes');
 
 const app = express();
 
@@ -16,6 +18,10 @@ app.get('/', (req, res) => {
     status: 'Running'
   });
 });
+
+app.use('/api/sms', smsRoutes);
+
+app.use('/api/employees', employeeRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
