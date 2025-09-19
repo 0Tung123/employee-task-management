@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthenticationCard from '../components/AuthenticationCard';
-import { signupWithEmail } from '../API/OwnerApi';
+import { signupWithEmail } from '../API/auth/OwnerApi';
 
 const SignupEmail = () => {
   const [email, setEmail] = useState('');

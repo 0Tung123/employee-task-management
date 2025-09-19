@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthenticationCard from '../components/AuthenticationCard';
-import { sendAccessCode, validateAccessCode } from '../API/OwnerApi';
+import { sendAccessCode, validateAccessCode } from '../API/auth/OwnerApi';
 
 const LoginPhone = () => {
   const [phoneNumber, setPhoneNumber] = useState('');

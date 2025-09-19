@@ -5,7 +5,7 @@ import {
   createEmployee,
   updateEmployee,
   deleteEmployee,
-} from '../API/OwnerApi';
+} from '../API/auth/OwnerApi';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import '../styles/Dashboard.css';
