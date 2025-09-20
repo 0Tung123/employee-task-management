@@ -45,29 +45,28 @@ const createEmployee = async (employeeData) => {
       throw new Error('Employee with this email already exists');
     }
     const employeeId = uuidv4();
-    const randomPassword = Math.random().toString(36).slice(-8);
-    const hashedPassword = await bcrypt.hash(randomPassword, 10);
+    const verificationToken = uuidv4(); // Unique link token
     const newEmployee = {
       id: employeeId,
       name: employeeData.name,
       email: employeeData.email,
       phone: employeeData.phone || '',
-      role: 'Employee',
+      role: employeeData.role || 'Employee',
       department: employeeData.department || '',
       position: employeeData.position || '',
-      password: hashedPassword,
-      tempPassword: randomPassword,
+      status: 'pending', // Status pending
+      verificationToken: verificationToken,
+      tokenExpiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
       createdAt: new Date(),
       lastLogin: null,
-      isActive: true,
+      isActive: false,
       isVerified: false
     };
     const docRef = doc(employeesCollection, employeeId);
     await setDoc(docRef, newEmployee);
-    await sendWelcomeEmail(newEmployee);
-    delete newEmployee.tempPassword;
-    delete newEmployee.password;
-    return newEmployee;
+    await sendSetupAccountEmail(newEmployee);
+    // Return only success and employeeId as requested
+    return { success: true, employeeId: employeeId };
   } catch (error) {
     throw error;
   }
@@ -176,30 +175,106 @@ const deleteEmployeeSchedules = async (employeeId) => {
   }
 };
 
-const sendWelcomeEmail = async (employee) => {
+const sendSetupAccountEmail = async (employee) => {
   try {
-    const subject = 'Welcome to Employee Task Management System';
+    const subject = 'Welcome to Employee Task Management System - Setup Your Account';
+    const setupLink = `${process.env.FRONTEND_URL}/setup-account?token=${employee.verificationToken}`;
     const message = `
       <h2>Welcome ${employee.name}!</h2>
       <p>Your account has been created in our Employee Task Management System.</p>
       
-      <h3>Your Login Credentials:</h3>
-      <p><strong>Email:</strong> ${employee.email}</p>
-      <p><strong>Temporary Password:</strong> ${employee.tempPassword}</p>
+      <p>To complete your account setup and start using the system, please click the link below:</p>
       
-      <p>To access your account:</p>
-      <ol>
-        <li>Use the LoginEmail API endpoint with your email</li>
-        <li>You will receive an OTP via email</li>
-        <li>Use the ValidateAccessCode API to complete login</li>
-      </ol>
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="${setupLink}" 
+           style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
+          Setup My Account
+        </a>
+      </div>
       
-      <p><em>Note: Please change your password after first login for security.</em></p>
+      <p>Or copy and paste this link into your browser:</p>
+      <p style="word-break: break-all; background-color: #f8f9fa; padding: 10px; border-radius: 3px;">
+        ${setupLink}
+      </p>
+      
+      <p><strong>Important:</strong> This link will expire in 7 days for security reasons.</p>
       
       <p>If you have any questions, please contact your manager.</p>
     `;
     await emailService.sendEmail(employee.email, subject, message);
   } catch (error) {
+    console.error('Failed to send setup account email:', error);
+  }
+};
+
+const findEmployeeByToken = async (verificationToken) => {
+  try {
+    const q = query(employeesCollection, where('verificationToken', '==', verificationToken));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) {
+      return null;
+    }
+    const doc = querySnapshot.docs[0];
+    return { id: doc.id, ...doc.data() };
+  } catch (error) {
+    throw error;
+  }
+};
+
+const verifyEmployeeToken = async (verificationToken) => {
+  try {
+    const employee = await findEmployeeByToken(verificationToken);
+    if (!employee) {
+      throw new Error('Invalid verification token');
+    }
+    
+    // Check if token is expired
+    if (new Date() > employee.tokenExpiresAt.toDate()) {
+      throw new Error('Verification token has expired');
+    }
+    
+    // Check if already verified
+    if (employee.status !== 'pending') {
+      throw new Error('Account has already been setup');
+    }
+    
+    return employee;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const setupEmployeeAccount = async (verificationToken, setupData) => {
+  try {
+    const employee = await verifyEmployeeToken(verificationToken);
+    
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(setupData.password, 10);
+    
+    // Update employee status and remove verification token
+    const docRef = doc(employeesCollection, employee.id);
+    const updatePayload = {
+      password: hashedPassword,
+      status: 'active',
+      isActive: true,
+      isVerified: true,
+      verificationToken: null,
+      tokenExpiresAt: null,
+      setupCompletedAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    // Update additional info if provided
+    if (setupData.phone) updatePayload.phone = setupData.phone.trim();
+    if (setupData.name) updatePayload.name = setupData.name.trim();
+    
+    await updateDoc(docRef, updatePayload);
+    
+    // Return employee data without sensitive info
+    const updatedEmployee = await getEmployeeById(employee.id);
+    return updatedEmployee;
+  } catch (error) {
+    throw error;
   }
 };
 
@@ -211,5 +286,8 @@ module.exports = {
   deleteEmployee,
   setEmployeeSchedule,
   getEmployeeSchedules,
-  findEmployeeByEmail
+  findEmployeeByEmail,
+  findEmployeeByToken,
+  verifyEmployeeToken,
+  setupEmployeeAccount
 };

@@ -1,44 +1,147 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE;
 
-export const getOwnerProfile = async () => {
-  const token = localStorage.getItem('token');
-  const headers = {
-    'Content-Type': 'application/json',
-    ...(token && { Authorization: `Bearer ${token}` }),
-  };
+// Get all employees
+export const getAllEmployees = async () => {
   try {
-    const response = await fetch(`${API_BASE_URL}/owner/profile`, {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/api/owner/employees`, {
       method: 'GET',
-      headers,
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
     });
-    if (!response.ok) {
-      throw new Error(await response.text());
-    }
-    return await response.json();
+    
+    const data = await response.json();
+    return data;
   } catch (error) {
-    console.error("Get owner profile failed:", error);
-    throw error;
+    console.error('Error fetching employees:', error);
+    return { success: false, error: 'Network error' };
   }
 };
 
-export const updateOwnerProfile = async (profileData) => {
-  const token = localStorage.getItem('token');
-  const headers = {
-    'Content-Type': 'application/json',
-    ...(token && { Authorization: `Bearer ${token}` }),
-  };
+// Create employee
+export const createEmployee = async (employeeData) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/owner/profile`, {
-      method: 'PUT',
-      headers,
-      body: JSON.stringify(profileData),
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/api/owner/CreateEmployee`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(employeeData)
     });
-    if (!response.ok) {
-      throw new Error(await response.text());
-    }
-    return await response.json();
+    
+    const data = await response.json();
+    return data;
   } catch (error) {
-    console.error("Update owner profile failed:", error);
-    throw error;
+    console.error('Error creating employee:', error);
+    return { success: false, error: 'Network error' };
+  }
+};
+
+// Update employee
+export const updateEmployee = async (employeeId, employeeData) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/api/owner/UpdateEmployee`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ employeeId, ...employeeData })
+    });
+    
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error updating employee:', error);
+    return { success: false, error: 'Network error' };
+  }
+};
+
+// Delete employee
+export const deleteEmployee = async (employeeId) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/api/owner/DeleteEmployee`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ employeeId })
+    });
+    
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error deleting employee:', error);
+    return { success: false, error: 'Network error' };
+  }
+};
+
+// Get employee by ID
+export const getEmployee = async (employeeId) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/api/owner/GetEmployee`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ employeeId })
+    });
+    
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching employee:', error);
+    return { success: false, error: 'Network error' };
+  }
+};
+
+// Set employee schedule
+export const setEmployeeSchedule = async (employeeId, scheduleData) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/api/owner/SetSchedule`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ employeeId, ...scheduleData })
+    });
+    
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error setting schedule:', error);
+    return { success: false, error: 'Network error' };
+  }
+};
+
+// Get employee schedules
+export const getEmployeeSchedules = async (employeeId) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/api/owner/GetEmployeeSchedules`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ employeeId })
+    });
+    
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching schedules:', error);
+    return { success: false, error: 'Network error' };
   }
 };

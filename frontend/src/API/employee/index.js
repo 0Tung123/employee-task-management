@@ -10,7 +10,7 @@ export const getEmployeeProfile = async () => {
     ...(token && { Authorization: `Bearer ${token}` }),
   };
   try {
-    const response = await fetch(`${API_BASE_URL}/employee/profile`, {
+    const response = await fetch(`${API_BASE_URL}/api/employee/profile`, {
       method: 'GET',
       headers,
     });
@@ -24,39 +24,21 @@ export const getEmployeeProfile = async () => {
   }
 };
 
-// Update employee profile
-export const updateEmployeeProfile = async (profileData) => {
+// Get employee schedules
+export const getEmployeeSchedules = async (startDate, endDate) => {
   const token = localStorage.getItem('token');
   const headers = {
     'Content-Type': 'application/json',
     ...(token && { Authorization: `Bearer ${token}` }),
   };
   try {
-    const response = await fetch(`${API_BASE_URL}/employee/profile`, {
-      method: 'PUT',
+    const body = {};
+    if (startDate) body.startDate = startDate;
+    if (endDate) body.endDate = endDate;
+    const response = await fetch(`${API_BASE_URL}/api/employee/GetMySchedules`, {
+      method: 'POST',
       headers,
-      body: JSON.stringify(profileData),
-    });
-    if (!response.ok) {
-      throw new Error(await response.text());
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Update employee profile failed:", error);
-    throw error;
-  }
-};
-
-export const getEmployeeSchedules = async () => {
-  const token = localStorage.getItem('token');
-  const headers = {
-    'Content-Type': 'application/json',
-    ...(token && { Authorization: `Bearer ${token}` }),
-  };
-  try {
-    const response = await fetch(`${API_BASE_URL}/employee/schedules`, {
-      method: 'GET',
-      headers,
+      body: JSON.stringify(body),
     });
     if (!response.ok) {
       throw new Error(await response.text());
@@ -64,28 +46,6 @@ export const getEmployeeSchedules = async () => {
     return await response.json();
   } catch (error) {
     console.error("Get employee schedules failed:", error);
-    throw error;
-  }
-};
-
-// Get specific schedule by ID
-export const getEmployeeScheduleById = async (id) => {
-  const token = localStorage.getItem('token');
-  const headers = {
-    'Content-Type': 'application/json',
-    ...(token && { Authorization: `Bearer ${token}` }),
-  };
-  try {
-    const response = await fetch(`${API_BASE_URL}/employee/schedules/${id}`, {
-      method: 'GET',
-      headers,
-    });
-    if (!response.ok) {
-      throw new Error(await response.text());
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Get employee schedule by ID failed:", error);
     throw error;
   }
 };

@@ -1,10 +1,10 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPhone from './pages/LoginPhone';
-import SignupPhone from './pages/SignupPhone';
 import LoginEmail from './pages/LoginEmail';
-import SignupEmail from './pages/SignupEmail';
-import Dashboard from './pages/Dashboard';
+import ManagerDashboard from './pages/ManagerDashboard';
+import SetupAccount from './pages/SetupAccount';
+
 import './styles/App.css';
 
 function App() {
@@ -12,12 +12,19 @@ function App() {
     <div className="app-wrapper">
       <Router>
         <Routes>
-          <Route path="/" element={<Navigate to="/login-phone" />} />
+          <Route path="/" element={<Navigate to="/login-email" replace />} />
+          {/* Auth routes */}
           <Route path="/login-phone" element={<LoginPhone />} />
-          <Route path="/signup-phone" element={<SignupPhone />} />
           <Route path="/login-email" element={<LoginEmail />} />
-          <Route path="/signup-email" element={<SignupEmail />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          {/* Setup account route */}
+          <Route path="/setup-account" element={<SetupAccount />} />
+          {/* Redirect deprecated signup routes to their login counterparts */}
+          <Route path="/signup-phone" element={<Navigate to="/login-phone" replace />} />
+          <Route path="/signup-email" element={<Navigate to="/login-email" replace />} />
+          {/* App routes */}
+          <Route path="/manager" element={<ManagerDashboard />} />
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/login-email" replace />} />
         </Routes>
       </Router>
     </div>

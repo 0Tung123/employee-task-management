@@ -6,6 +6,7 @@ const { db } = require('./configs/firebase.config');
 
 // Import routes
 const authRoutes = require('./module/auth/routes/authRoutes');
+const setupRoutes = require('./module/auth/routes/setupRoutes');
 const ownerEmployeeRoutes = require('./module/owner/routes/employeeRoutes');
 const employeeProfileRoutes = require('./module/employee/routes/profileRoutes');
 const smsRoutes = require('./module/sms/routes/smsRoutes');
@@ -31,6 +32,9 @@ app.get('/', (req, res) => {
 
 // Public authentication routes (no middleware required)
 app.use('/api/auth', authRoutes);
+
+// Public setup routes (no middleware required)
+app.use('/api/setup', setupRoutes);
 
 // Owner routes (requires Owner role)
 app.use('/api/owner', ownerEmployeeRoutes);

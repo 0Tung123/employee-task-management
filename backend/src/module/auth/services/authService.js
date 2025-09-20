@@ -97,6 +97,13 @@ const authenticateUser = async (identifier, userType) => {
       existingUser = await findOwnerByPhone(identifier);
     } else if (userType === 'employee') {
       existingUser = await findEmployeeByEmail(identifier);
+      // Check if employee account is setup
+      if (existingUser && existingUser.status === 'pending') {
+        throw new Error('Account setup is required. Please check your email for setup instructions.');
+      }
+      if (existingUser && !existingUser.isActive) {
+        throw new Error('Account is inactive. Please contact your manager.');
+      }
     }
     if (existingUser) {
       await updateUserLogin(existingUser.id, userType);

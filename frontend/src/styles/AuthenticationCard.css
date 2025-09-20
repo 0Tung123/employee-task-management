@@ -108,14 +108,25 @@
   width: 90%;
   text-align: center;
   font-size: 12px;
-  color: red;
   margin: 0;
+  padding: 8px 10px;
+  border-radius: 4px;
+  box-sizing: border-box;
 }
 
 .auth-card .message.success {
-  color: green;
+  color: #0F5132;
+  background: #D1E7DD;
+  border: 1px solid #BADBCC;
 }
 
+.auth-card .message.error {
+  color: #842029;
+  background: #F8D7DA;
+  border: 1px solid #F5C2C7;
+}
+
+/* Default spacing (no message) keeps your original UI */
 .auth-card .bottom-text {
   position: absolute;
   top: 271px;
@@ -131,6 +142,11 @@
   margin: 0;
   text-align: center;
   word-wrap: break-word;
+}
+
+/* When there is a message, push elements down to avoid overlap */
+.auth-card.has-message .bottom-text {
+  top: 305px;
 }
 
 .resend-link {
@@ -161,6 +177,7 @@
   text-decoration: underline;
 }
 
+/* Default footer position */
 .auth-card-footer {
   position: absolute;
   top: 336px;
@@ -172,6 +189,11 @@
   justify-content: flex-start;
   align-items: center;
   gap: 5px;
+}
+
+/* Push footer down only when there is a message */
+.auth-card.has-message .auth-card-footer {
+  top: 350px;
 }
 
 .auth-card-footer .footer-text {

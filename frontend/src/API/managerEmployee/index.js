@@ -10,7 +10,7 @@ export const getAllEmployees = async () => {
     ...(token && { Authorization: `Bearer ${token}` }),
   };
   try {
-    const response = await fetch(`${API_BASE_URL}/owner/employees`, {
+    const response = await fetch(`${API_BASE_URL}/api/owner/employees`, {
       method: 'GET',
       headers,
     });
@@ -32,9 +32,10 @@ export const getEmployeeById = async (id) => {
     ...(token && { Authorization: `Bearer ${token}` }),
   };
   try {
-    const response = await fetch(`${API_BASE_URL}/owner/employees/${id}`, {
-      method: 'GET',
+    const response = await fetch(`${API_BASE_URL}/api/owner/GetEmployee`, {
+      method: 'POST',
       headers,
+      body: JSON.stringify({ employeeId: id }),
     });
     if (!response.ok) {
       throw new Error(await response.text());
@@ -54,15 +55,15 @@ export const createEmployee = async (employeeData) => {
     ...(token && { Authorization: `Bearer ${token}` }),
   };
   try {
-    const response = await fetch(`${API_BASE_URL}/owner/employees`, {
+    const response = await fetch(`${API_BASE_URL}/api/owner/CreateEmployee`, {
       method: 'POST',
       headers,
-      body: JSON.stringify(employeeData),
+      body: JSON.stringify(employeeData), // { name, email, phone, role, department }
     });
     if (!response.ok) {
       throw new Error(await response.text());
     }
-    return await response.json();
+    return await response.json(); // Returns { success: true, employeeId }
   } catch (error) {
     console.error("Create employee failed:", error);
     throw error;
@@ -77,10 +78,10 @@ export const updateEmployee = async (id, employeeData) => {
     ...(token && { Authorization: `Bearer ${token}` }),
   };
   try {
-    const response = await fetch(`${API_BASE_URL}/owner/employees/${id}`, {
-      method: 'PUT',
+    const response = await fetch(`${API_BASE_URL}/api/owner/UpdateEmployee`, {
+      method: 'POST',
       headers,
-      body: JSON.stringify(employeeData),
+      body: JSON.stringify({ employeeId: id, ...employeeData }),
     });
     if (!response.ok) {
       throw new Error(await response.text());
@@ -100,9 +101,10 @@ export const deleteEmployee = async (id) => {
     ...(token && { Authorization: `Bearer ${token}` }),
   };
   try {
-    const response = await fetch(`${API_BASE_URL}/owner/employees/${id}`, {
-      method: 'DELETE',
+    const response = await fetch(`${API_BASE_URL}/api/owner/DeleteEmployee`, {
+      method: 'POST',
       headers,
+      body: JSON.stringify({ employeeId: id }),
     });
     if (!response.ok) {
       throw new Error(await response.text());

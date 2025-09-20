@@ -13,6 +13,7 @@ const AuthenticationCard = ({
   buttonText,
   onButtonClick,
   message,
+  messageType, // 'success' | 'error'
   bottomText,
   linkText,
   onLinkClick,
@@ -20,8 +21,11 @@ const AuthenticationCard = ({
   buttonProps = {},
   cardType = 'signin',
 }) => {
+  // Determine final message class: prefer explicit messageType, fallback to heuristic
+  const derivedType = messageType || (typeof message === 'string' && message.toLowerCase().includes('success') ? 'success' : 'error');
+
   return (
-    <div className="auth-card">
+    <div className={`auth-card ${message ? 'has-message' : ''}`}>
       <div className='auth-card-title'>{title}</div>
       {subtitle && <p>{subtitle}</p>}
       <Input
@@ -42,7 +46,11 @@ const AuthenticationCard = ({
         </div>
       )}
 
-      {message && <p className={`message ${message.includes('success') ? 'success' : ''}`}>{message}</p>}
+      {message && (
+        <p className={`message ${derivedType}`}>
+          {message}
+        </p>
+      )}
       {bottomText && <p className="bottom-text">{bottomText}</p>}
 
       {cardType === 'signin' && (bottomText || linkText) && (

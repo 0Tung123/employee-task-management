@@ -48,7 +48,7 @@ const GetAllEmployees = async (req, res) => {
 
 const CreateEmployee = async (req, res) => {
   try {
-    const { name, email, phone, department, position } = req.body;
+    const { name, email, phone, role, department } = req.body;
     if (!name || !email) {
       return res.status(400).json({
         success: false,
@@ -66,15 +66,11 @@ const CreateEmployee = async (req, res) => {
       name: name.trim(),
       email: email.toLowerCase().trim(),
       phone: phone?.trim() || '',
-      department: department?.trim() || '',
-      position: position?.trim() || ''
+      role: role?.trim() || 'Employee',
+      department: department?.trim() || ''
     };
-    const newEmployee = await employeeService.createEmployee(employeeData);
-    res.status(201).json({
-      success: true,
-      message: 'Employee created successfully and welcome email sent',
-      employee: newEmployee
-    });
+    const result = await employeeService.createEmployee(employeeData);
+    res.status(201).json(result); // Returns { success: true, employeeId }
   } catch (error) {
     if (error.message === 'Employee with this email already exists') {
       return res.status(409).json({
@@ -242,6 +238,84 @@ const GetEmployeeSchedules = async (req, res) => {
   }
 };
 
+const VerifyToken = async (req, res) => {
+  try {
+    const { token } = req.body;
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        error: 'Verification token is required'
+      });
+    }
+    const employee = await employeeService.verifyEmployeeToken(token);
+    res.json({
+      success: true,
+      message: 'Token is valid',
+      employee: {
+        id: employee.id,
+        name: employee.name,
+        email: employee.email,
+        department: employee.department
+      }
+    });
+  } catch (error) {
+    if (error.message === 'Invalid verification token' || 
+        error.message === 'Verification token has expired' ||
+        error.message === 'Account has already been setup') {
+      return res.status(400).json({
+        success: false,
+        error: error.message
+      });
+    }
+    res.status(500).json({
+      success: false,
+      error: 'Failed to verify token'
+    });
+  }
+};
+
+const SetupAccount = async (req, res) => {
+  try {
+    const { token, password, name, phone } = req.body;
+    if (!token || !password) {
+      return res.status(400).json({
+        success: false,
+        error: 'Token and password are required'
+      });
+    }
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        error: 'Password must be at least 6 characters long'
+      });
+    }
+    const setupData = {
+      password: password.trim(),
+      ...(name && { name: name.trim() }),
+      ...(phone && { phone: phone.trim() })
+    };
+    const employee = await employeeService.setupEmployeeAccount(token, setupData);
+    res.json({
+      success: true,
+      message: 'Account setup completed successfully',
+      employee: employee
+    });
+  } catch (error) {
+    if (error.message === 'Invalid verification token' || 
+        error.message === 'Verification token has expired' ||
+        error.message === 'Account has already been setup') {
+      return res.status(400).json({
+        success: false,
+        error: error.message
+      });
+    }
+    res.status(500).json({
+      success: false,
+      error: 'Failed to setup account'
+    });
+  }
+};
+
 module.exports = {
   GetEmployee,
   GetAllEmployees,
@@ -249,5 +323,7 @@ module.exports = {
   UpdateEmployee,
   DeleteEmployee,
   SetSchedule,
-  GetEmployeeSchedules
+  GetEmployeeSchedules,
+  VerifyToken,
+  SetupAccount
 };
