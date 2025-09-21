@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPhone from './pages/LoginPhone';
 import LoginEmail from './pages/LoginEmail';
+import EmployeeLogin from './pages/EmployeeLogin';
 import SetupAccount from './pages/SetupAccount';
 import Dashboard from './pages/Dashboard';
 
@@ -15,6 +16,7 @@ function App() {
           <Route path="/" element={<Navigate to="/login-phone" replace />} />
           <Route path="/login-phone" element={<LoginPhone />} />
           <Route path="/login-email" element={<LoginEmail />} />
+          <Route path="/employee-login" element={<EmployeeLogin />} />
           <Route path="/setup-account" element={<SetupAccount />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/signup-phone" element={<Navigate to="/login-phone" replace />} />

@@ -13,7 +13,8 @@ const authenticateToken = (req, res, next) => {
 
   try {
     const decoded = verifyToken(token);
-    req.user = decoded;
+    
+    req.user = { ...decoded, id: decoded.id || decoded.userId };
     next();
   } catch (error) {
     return res.status(403).json({ 

@@ -276,7 +276,7 @@ const VerifyToken = async (req, res) => {
 
 const SetupAccount = async (req, res) => {
   try {
-    const { token, password, name, phone } = req.body;
+    const { token, password, username, name, phone } = req.body;
     if (!token || !password) {
       return res.status(400).json({
         success: false,
@@ -291,6 +291,7 @@ const SetupAccount = async (req, res) => {
     }
     const setupData = {
       password: password.trim(),
+      ...(username && { username: username.trim() }),
       ...(name && { name: name.trim() }),
       ...(phone && { phone: phone.trim() })
     };

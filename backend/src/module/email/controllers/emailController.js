@@ -24,7 +24,6 @@ const sendOTP = async (req, res) => {
       otp: otp // For development/testing only - remove in production
     });
   } catch (error) {
-    console.error('Error sending OTP email:', error);
     res.status(500).json({ 
       error: 'Failed to send OTP email',
       details: error.message 
@@ -65,7 +64,6 @@ const verifyOTP = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error verifying OTP:', error);
     res.status(500).json({ 
       error: 'Failed to verify OTP',
       details: error.message 

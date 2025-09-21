@@ -43,7 +43,6 @@ const Message = () => {
         setEmployees([]);
       }
     } catch (error) {
-      console.error('Failed to load employees');
       setMessage('Failed to load employees');
       setEmployees([]);
     }

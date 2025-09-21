@@ -1,5 +1,31 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE;
 
+// Generic API request helper
+export const apiRequest = async (endpoint, options = {}) => {
+  const token = localStorage.getItem('token');
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(token && { Authorization: `Bearer ${token}` }),
+    ...options.headers,
+  };
+
+  try {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      ...options,
+      headers,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(errorText || `HTTP ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const sendOwnerOTP = async (phoneNumber) => {
   const headers = {
     'Content-Type': 'application/json',
@@ -38,6 +64,10 @@ export const validateOwnerOTP = async (phoneNumber, otp) => {
     if (result.token) {
       localStorage.setItem('token', result.token);
       localStorage.setItem('userData', JSON.stringify(result.user));
+      // Update socket auth for validateOwnerOTP
+      import('../socket').then(({ updateSocketAuth }) => {
+        updateSocketAuth(result.token);
+      });
     }
 
     return result;
@@ -84,6 +114,9 @@ export const validateEmployeeOTP = async (email, otp) => {
     if (result.token) {
       localStorage.setItem('token', result.token);
       localStorage.setItem('userData', JSON.stringify(result.user));
+      import('../socket').then(({ updateSocketAuth }) => {
+        updateSocketAuth(result.token);
+      });
     }
 
     return result;
@@ -130,6 +163,9 @@ export const validateSignupOTP = async (email, otp) => {
     if (result.token) {
       localStorage.setItem('token', result.token);
       localStorage.setItem('userData', JSON.stringify(result.user));
+      import('../socket').then(({ updateSocketAuth }) => {
+        updateSocketAuth(result.token);
+      });
     }
 
     return result;
@@ -150,4 +186,38 @@ export const isLoggedIn = () => {
 export const getUserRole = () => {
   const userData = JSON.parse(localStorage.getItem('userData') || '{}');
   return userData.role || null;
+};
+
+export const getUserData = () => {
+  const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+  return userData;
+};
+
+export const loginEmployee = async (usernameOrEmail, password) => {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/auth/employee-login`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ usernameOrEmail, password }),
+    });
+    if (!response.ok) {
+      throw new Error(await response.text());
+    }
+    const result = await response.json();
+
+    if (result.success && result.token) {
+      localStorage.setItem('token', result.token);
+      localStorage.setItem('userData', JSON.stringify(result.employee));
+      import('../socket').then(({ updateSocketAuth }) => {
+        updateSocketAuth(result.token);
+      });
+    }
+
+    return result;
+  } catch (error) {
+    throw error;
+  }
 };

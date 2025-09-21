@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import AuthenticationCard from '../components/AuthenticationCard';
+import SetupAccountCard from '../components/SetupAccountCard';
 import { verifySetupToken, setupAccount } from '../API/setup';
 
 const SetupAccount = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
+  const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState(null);
@@ -63,12 +62,12 @@ const SetupAccount = () => {
     setMessage('');
     setMessageType(null);
     try {
-      const response = await setupAccount(token, password, name || undefined, phone || undefined);
+      const response = await setupAccount(token, password, username || undefined);
       if (response.success) {
         setMessage('Account setup successful! Redirecting to login...');
         setMessageType('success');
         setTimeout(() => {
-          navigate('/login-email');
+          navigate('/employee-login');
         }, 2000);
       } else {
         setMessage(response.error || 'Failed to setup account');
@@ -82,41 +81,32 @@ const SetupAccount = () => {
   };
 
   return (
-    <AuthenticationCard title="Setup Your Account">
+    <SetupAccountCard 
+      title="Setup Your Account"
+      message={message}
+      messageType={messageType}
+    >
       {step === 1 ? (
         <div>
-          <p>Verifying your setup link...</p>
-          {loading && <p>Loading...</p>}
-          {message && (
-            <div className={`message ${messageType}`}>
-              {message}
-            </div>
-          )}
+          <div className="loading-text">Verifying your setup link...</div>
+          {loading && <div className="loading-text">Loading...</div>}
         </div>
       ) : (
         <div>
-          <p>Welcome {employeeData?.name || employeeData?.email}!</p>
-          <p>Please complete your account setup.</p>
-
-          <div className="input-group">
-            <label htmlFor="name">Name (optional)</label>
-            <input
-              id="name"
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter your name"
-            />
+          <div className="welcome-text">
+            Welcome <strong>{employeeData?.name || employeeData?.email}</strong>!<br />
+            Please complete your account setup.
           </div>
 
           <div className="input-group">
-            <label htmlFor="phone">Phone (optional)</label>
+            <label htmlFor="username">Username *</label>
             <input
-              id="phone"
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="Enter your phone number"
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter your username"
+              required
             />
           </div>
 
@@ -147,19 +137,13 @@ const SetupAccount = () => {
           <button
             className="auth-button"
             onClick={handleSetup}
-            disabled={loading || !password || !confirmPassword}
+            disabled={loading || !password || !confirmPassword || !username}
           >
             {loading ? 'Setting up...' : 'Setup Account'}
           </button>
-
-          {message && (
-            <div className={`message ${messageType}`}>
-              {message}
-            </div>
-          )}
         </div>
       )}
-    </AuthenticationCard>
+    </SetupAccountCard>
   );
 };
 

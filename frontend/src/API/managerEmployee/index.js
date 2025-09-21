@@ -16,7 +16,6 @@ export const getAllEmployees = async () => {
     }
     return await response.json();
   } catch (error) {
-    console.error("Get all employees failed:", error);
     throw error;
   }
 };
@@ -38,7 +37,6 @@ export const getEmployeeById = async (id) => {
     }
     return await response.json();
   } catch (error) {
-    console.error("Get employee by ID failed:", error);
     throw error;
   }
 };
@@ -60,7 +58,6 @@ export const createEmployee = async (employeeData) => {
     }
     return await response.json(); // Returns { success: true, employeeId }
   } catch (error) {
-    console.error("Create employee failed:", error);
     throw error;
   }
 };
@@ -82,7 +79,6 @@ export const updateEmployee = async (id, employeeData) => {
     }
     return await response.json();
   } catch (error) {
-    console.error("Update employee failed:", error);
     throw error;
   }
 };
@@ -104,7 +100,6 @@ export const deleteEmployee = async (id) => {
     }
     return await response.json();
   } catch (error) {
-    console.error("Delete employee failed:", error);
     throw error;
   }
 };

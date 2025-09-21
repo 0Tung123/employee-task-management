@@ -21,7 +21,6 @@ const createOwner = async (ownerData) => {
 
     return { id: phoneNumber, ...owner };
   } catch (error) {
-    console.error('Error creating owner:', error);
     throw error;
   }
 };
@@ -36,7 +35,6 @@ const getOwnerByPhone = async (phoneNumber) => {
     }
     return null;
   } catch (error) {
-    console.error('Error getting owner by phone:', error);
     throw error;
   }
 };

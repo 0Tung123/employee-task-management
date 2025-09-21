@@ -24,14 +24,34 @@ const getEmployeeById = async (employeeId) => {
 
 const getAllEmployees = async () => {
   try {
-    const q = query(employeesCollection, orderBy('createdAt', 'desc'));
-    const querySnapshot = await getDocs(q);
+
+    const querySnapshot = await getDocs(employeesCollection);
     const employees = [];
+    
     querySnapshot.forEach((doc) => {
       const employeeData = { id: doc.id, ...doc.data() };
-      delete employeeData.password;
-      employees.push(employeeData);
+      
+
+      const normalizedRole = employeeData.role ? employeeData.role.toLowerCase() : '';
+      
+
+      if (normalizedRole === 'employee') {
+        delete employeeData.password;
+        
+
+        employeeData.role = 'Employee';
+        
+        employees.push(employeeData);
+      }
     });
+    
+
+    employees.sort((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt.seconds * 1000) : new Date(0);
+      const dateB = b.createdAt ? new Date(b.createdAt.seconds * 1000) : new Date(0);
+      return dateB - dateA;
+    });
+    
     return employees;
   } catch (error) {
     throw error;
@@ -107,13 +127,69 @@ const deleteEmployee = async (employeeId) => {
 
 const findEmployeeByEmail = async (email) => {
   try {
-    const q = query(employeesCollection, where('email', '==', email));
-    const querySnapshot = await getDocs(q);
+    // Thử tìm exact match trước
+    let q = query(employeesCollection, where('email', '==', email));
+    let querySnapshot = await getDocs(q);
+    
     if (!querySnapshot.empty) {
       const doc = querySnapshot.docs[0];
       return { id: doc.id, ...doc.data() };
     }
+    
+    // Nếu không tìm thấy exact match, thử case-insensitive search
+    // Lấy tất cả employees và filter bằng JavaScript
+    const allEmployeesQuery = await getDocs(employeesCollection);
+    for (const doc of allEmployeesQuery.docs) {
+      const employee = doc.data();
+      if (employee.email && employee.email.toLowerCase() === email.toLowerCase()) {
+        return { id: doc.id, ...employee };
+      }
+    }
+    
     return null;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const findEmployeeByUsername = async (username) => {
+  try {
+    // Thử tìm exact match trước
+    let q = query(employeesCollection, where('username', '==', username));
+    let querySnapshot = await getDocs(q);
+    
+    if (!querySnapshot.empty) {
+      const doc = querySnapshot.docs[0];
+      return { id: doc.id, ...doc.data() };
+    }
+    
+    // Nếu không tìm thấy exact match, thử case-insensitive search
+    // Lấy tất cả employees và filter bằng JavaScript
+    const allEmployeesQuery = await getDocs(employeesCollection);
+    for (const doc of allEmployeesQuery.docs) {
+      const employee = doc.data();
+      if (employee.username && employee.username.toLowerCase() === username.toLowerCase()) {
+        return { id: doc.id, ...employee };
+      }
+    }
+    
+    return null;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const findEmployeeByUsernameOrEmail = async (identifier) => {
+  try {
+    // Thử tìm theo email trước
+    let employee = await findEmployeeByEmail(identifier);
+    
+    // Nếu không tìm thấy theo email, thử tìm theo username
+    if (!employee) {
+      employee = await findEmployeeByUsername(identifier);
+    }
+    
+    return employee;
   } catch (error) {
     throw error;
   }
@@ -123,7 +199,6 @@ const sendSetupAccountEmail = async (employee) => {
   try {
     await emailService.sendWelcomeEmail(employee.email, employee.name, employee.verificationToken);
   } catch (error) {
-    console.error('Failed to send setup account email:', error);
   }
 };
 
@@ -171,6 +246,72 @@ const setupAccount = async (token, password, username) => {
   }
 };
 
+// Thêm method để verify token cho setup account
+const verifyEmployeeToken = async (token) => {
+  try {
+    const employee = await findEmployeeByToken(token);
+    if (!employee) {
+      throw new Error('Invalid verification token');
+    }
+
+    if (employee.tokenExpiresAt.toDate() < new Date()) {
+      throw new Error('Verification token has expired');
+    }
+
+    if (employee.isVerified) {
+      throw new Error('Account has already been setup');
+    }
+
+    return employee;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// Thêm method để setup account với data mới
+const setupEmployeeAccount = async (token, setupData) => {
+  try {
+    const employee = await findEmployeeByToken(token);
+    if (!employee) {
+      throw new Error('Invalid verification token');
+    }
+
+    if (employee.tokenExpiresAt.toDate() < new Date()) {
+      throw new Error('Verification token has expired');
+    }
+
+    if (employee.isVerified) {
+      throw new Error('Account has already been setup');
+    }
+
+    const hashedPassword = await bcrypt.hash(setupData.password, 10);
+    const docRef = doc(employeesCollection, employee.id);
+    
+    const updateData = {
+      password: hashedPassword,
+      isVerified: true,
+      isActive: true,
+      status: 'active',
+      verificationToken: null,
+      tokenExpiresAt: null,
+      updatedAt: new Date()
+    };
+
+    // Cập nhật username, name và phone nếu có
+    if (setupData.username) updateData.username = setupData.username;
+    if (setupData.name) updateData.name = setupData.name;
+    if (setupData.phone) updateData.phone = setupData.phone;
+
+    await updateDoc(docRef, updateData);
+
+    // Trả về employee data đã cập nhật (không có password)
+    const updatedEmployee = await getEmployeeById(employee.id);
+    return updatedEmployee;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const deleteEmployeeSchedules = async (employeeId) => {
   try {
     const q = query(schedulesCollection, where('employeeId', '==', employeeId));
@@ -189,6 +330,10 @@ module.exports = {
   updateEmployee,
   deleteEmployee,
   findEmployeeByEmail,
+  findEmployeeByUsername,
+  findEmployeeByUsernameOrEmail,
   findEmployeeByToken,
-  setupAccount
+  setupAccount,
+  verifyEmployeeToken,
+  setupEmployeeAccount
 };

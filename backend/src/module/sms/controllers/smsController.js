@@ -20,7 +20,6 @@ const createNewAccessCode = async (req, res) => {
         message: "SMS sent successfully" 
       });
     } catch (smsError) {
-      console.error('Failed to send SMS:', smsError);
       res.status(500).json({ 
         error: 'Failed to send SMS', 
         details: smsError.message,
@@ -28,7 +27,6 @@ const createNewAccessCode = async (req, res) => {
       });
     }
   } catch (error) {
-    console.error('Error creating access code:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -51,7 +49,6 @@ const validateAccessCode = async (req, res) => {
 
     res.json({ success: true });
   } catch (error) {
-    console.error('Error validating access code:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };

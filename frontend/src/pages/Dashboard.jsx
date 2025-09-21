@@ -4,11 +4,13 @@ import { Bell, Search, User, ChevronDown, Users, UserPlus, Calendar, BarChart3 }
 import Sidebar from '../components/Sidebar';
 import EmployeeTable from '../components/EmployeeTable';
 import EmployeeModal from '../components/EmployeeModal';
+import TaskManagement from '../components/TaskManagement';
+import Chat from '../components/Chat';
 import { NotificationContainer } from '../components/Notification';
 import ConfirmDialog from '../components/ConfirmDialog';
 import useNotification from '../hooks/useNotification';
 import { getAllEmployees, createEmployee, updateEmployee, deleteEmployee } from '../API/owner';
-import { getUserRole, logout } from '../API/auth';
+import { getUserRole, getUserData, logout } from '../API/auth';
 import '../styles/Dashboard.css';
 
 const Dashboard = () => {
@@ -22,33 +24,59 @@ const Dashboard = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [confirmDialog, setConfirmDialog] = useState({ isOpen: false, employee: null });
+  const [userData, setUserData] = useState(null);
+  const [activeSection, setActiveSection] = useState('tasks'); // Default to tasks
   const navigate = useNavigate();
   const { notifications, removeNotification, showSuccess, showError, showWarning } = useNotification();
 
   useEffect(() => {
-    const fetchEmployees = async () => {
+    const initializeUser = async () => {
       try {
         const userRole = getUserRole();
-        if (!userRole) {
+        const user = getUserData();
+        
+        if (!userRole || !user) {
           navigate('/login-email');
           return;
         }
 
-        const response = await getAllEmployees();
-        if (response.success) {
-          setEmployees(response.employees);
+        setUserData(user);
+
+        // Set default section based on user role
+        if (user.role === 'Owner') {
+          setActiveSection('employees');
         } else {
-          showError('Failed to load employees');
+          setActiveSection('tasks');
         }
+
+        setLoading(false);
       } catch (err) {
-        showError('Failed to load employees');
-      } finally {
+        showError('Failed to initialize');
         setLoading(false);
       }
     };
 
-    fetchEmployees();
+    initializeUser();
   }, [navigate]);
+
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      if (activeSection === 'employees' && userData?.role === 'Owner') {
+        try {
+          const response = await getAllEmployees();
+          if (response.success) {
+            setEmployees(response.employees);
+          } else {
+            showError('Failed to load employees');
+          }
+        } catch (err) {
+          showError('Failed to load employees');
+        }
+      }
+    };
+
+    fetchEmployees();
+  }, [activeSection, userData?.role]); // Only depend on role, not entire userData object
 
   useEffect(() => {
     const filtered = employees.filter(employee =>
@@ -145,6 +173,10 @@ const Dashboard = () => {
     navigate('/login-email');
   };
 
+  const handleSectionChange = (section) => {
+    setActiveSection(section);
+  };
+
   const stats = {
     totalEmployees: employees.length,
     activeEmployees: employees.filter(emp => emp.status === 'active').length,
@@ -154,13 +186,21 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard">
-      <Sidebar />
+      <Sidebar activeSection={activeSection} onSectionChange={handleSectionChange} />
       <main className="main-content">
         <header className="dashboard-header">
           <div className="header-content">
             <div>
-              <h1 className="page-title">Employee Management</h1>
-              <p className="page-subtitle">Manage your team effectively</p>
+              <h1 className="page-title">
+                {activeSection === 'employees' && 'Employee Management'}
+                {activeSection === 'tasks' && 'Task Management'}
+                {activeSection === 'messages' && 'Messages'}
+              </h1>
+              <p className="page-subtitle">
+                {activeSection === 'employees' && 'Manage your team effectively'}
+                {activeSection === 'tasks' && 'Manage tasks and assignments'}
+                {activeSection === 'messages' && 'Communication center'}
+              </p>
             </div>
             <div className="header-actions">
               <button className="header-btn">
@@ -182,89 +222,95 @@ const Dashboard = () => {
             </div>
           </div>
         </header>
-        <section className="stats-section">
-          <div className="stats-grid">
-            <div className="stat-card">
-              <div className="stat-icon">
-                <Users size={24} color="#2563eb" />
+        {/* Stats section - chỉ hiển thị cho Employee Management */}
+        {userData?.role === 'Owner' && activeSection === 'employees' && (
+          <section className="stats-section">
+            <div className="stats-grid">
+              <div className="stat-card">
+                <div className="stat-icon">
+                  <Users size={24} color="#2563eb" />
+                </div>
+                <div className="stat-content">
+                  <h3>{stats.totalEmployees}</h3>
+                  <p>Total Employees</p>
+                </div>
               </div>
-              <div className="stat-content">
-                <h3>{stats.totalEmployees}</h3>
-                <p>Total Employees</p>
+
+              <div className="stat-card">
+                <div className="stat-icon">
+                  <Calendar size={24} color="#dc2626" />
+                </div>
+                <div className="stat-content">
+                  <h3>{stats.pendingTasks}</h3>
+                  <p>Pending Tasks</p>
+                </div>
+              </div>
+
+              <div className="stat-card">
+                <div className="stat-icon">
+                  <BarChart3 size={24} color="#7c3aed" />
+                </div>
+                <div className="stat-content">
+                  <h3>{stats.completedTasks}</h3>
+                  <p>Completed Tasks</p>
+                </div>
               </div>
             </div>
+          </section>
+        )}
 
-            <div className="stat-card">
-              <div className="stat-icon">
-                <UserPlus size={24} color="#059669" />
-              </div>
-              <div className="stat-content">
-                <h3>{stats.activeEmployees}</h3>
-                <p>Active Employees</p>
-              </div>
-            </div>
-
-            <div className="stat-card">
-              <div className="stat-icon">
-                <Calendar size={24} color="#dc2626" />
-              </div>
-              <div className="stat-content">
-                <h3>{stats.pendingTasks}</h3>
-                <p>Pending Tasks</p>
-              </div>
-            </div>
-
-            <div className="stat-card">
-              <div className="stat-icon">
-                <BarChart3 size={24} color="#7c3aed" />
-              </div>
-              <div className="stat-content">
-                <h3>{stats.completedTasks}</h3>
-                <p>Completed Tasks</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
+        {/* Content Area */}
         <div className="content">
-          <div className="content-header">
-            <h2>Employee List</h2>
-            <div className="search-container">
-              <div className="search-input-wrapper">
-                <Search size={18} color="#6b7280" />
-                <input
-                  type="text"
-                  placeholder="Search employees..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="search-input"
-                />
+          {activeSection === 'employees' && userData?.role === 'Owner' && (
+            <>
+              <div className="content-header">
+                <h2>Employee List</h2>
+                <div className="search-container">
+                  <div className="search-input-wrapper">
+                    <Search size={18} color="#6b7280" />
+                    <input
+                      type="text"
+                      placeholder="Search employees..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="search-input"
+                    />
+                  </div>
+                  <button className="create-btn" onClick={handleCreateEmployee}>
+                    <UserPlus size={16} />
+                    Add Employee
+                  </button>
+                </div>
               </div>
-              <button className="create-btn" onClick={handleCreateEmployee}>
-                <UserPlus size={16} />
-                Add Employee
-              </button>
-            </div>
-          </div>
-          {loading ? (
-            <div className="loading-state">
-              <p>Loading employees...</p>
-            </div>
-          ) : error ? (
-            <div className="error-state">
-              <p>{error}</p>
-            </div>
-          ) : filteredEmployees.length === 0 ? (
-            <div className="empty-state">
-              <Users size={48} color="#9ca3af" />
-              <p>No employees found</p>
-            </div>
-          ) : (
-            <EmployeeTable
-              employees={filteredEmployees}
-              onEdit={handleEditEmployee}
-              onDelete={handleDeleteEmployee}
-            />
+              {loading ? (
+                <div className="loading-state">
+                  <p>Loading employees...</p>
+                </div>
+              ) : error ? (
+                <div className="error-state">
+                  <p>{error}</p>
+                </div>
+              ) : filteredEmployees.length === 0 ? (
+                <div className="empty-state">
+                  <Users size={48} color="#9ca3af" />
+                  <p>No employees found</p>
+                </div>
+              ) : (
+                <EmployeeTable
+                  employees={filteredEmployees}
+                  onEdit={handleEditEmployee}
+                  onDelete={handleDeleteEmployee}
+                />
+              )}
+            </>
+          )}
+
+          {activeSection === 'tasks' && (
+            <TaskManagement />
+          )}
+
+          {activeSection === 'messages' && (
+            <Chat />
           )}
         </div>
         {showCreateModal && (

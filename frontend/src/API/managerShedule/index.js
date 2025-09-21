@@ -17,7 +17,6 @@ export const setSchedule = async (scheduleData) => {
     }
     return await response.json();
   } catch (error) {
-    console.error("Set schedule failed:", error);
     throw error;
   }
 };
@@ -42,7 +41,6 @@ export const getEmployeeSchedules = async (employeeId, startDate, endDate) => {
     }
     return await response.json();
   } catch (error) {
-    console.error("Get employee schedules failed:", error);
     throw error;
   }
 };

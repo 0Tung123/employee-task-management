@@ -18,8 +18,10 @@ const EmployeeTable = ({ employees, onEdit, onDelete }) => {
             <td>{employee.name}</td>
             <td>{employee.email}</td>
             <td className="center">
-              <span className="status-badge active">
-                Active
+              <span className={`status-badge ${employee.status || 'pending'}`}>
+                {employee.status === 'active' ? 'Active' : 
+                 employee.status === 'pending' ? 'Pending' : 
+                 employee.status || 'Pending'}
               </span>
             </td>
             <td className="center">

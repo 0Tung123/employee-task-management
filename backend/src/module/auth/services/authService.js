@@ -18,7 +18,6 @@ const saveOTPToFirebase = async (identifier, otp, userType) => {
       createdAt: new Date()
     });
   } catch (error) {
-    console.error('Error saving OTP to Firebase:', error);
     throw error;
   }
 };
@@ -46,7 +45,6 @@ const sendEmailOTP = async (email, otp) => {
   try {
     await emailService.sendOTPEmail(email, otp);
   } catch (error) {
-    console.error('Error sending Email OTP:', error);
     throw error;
   }
 };

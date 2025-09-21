@@ -19,7 +19,7 @@ export const verifySetupToken = async (token) => {
   }
 };
 
-export const setupAccount = async (token, password, name, phone) => {
+export const setupAccount = async (token, password, username, name, phone) => {
   const headers = {
     'Content-Type': 'application/json',
   };
@@ -30,6 +30,7 @@ export const setupAccount = async (token, password, name, phone) => {
       body: JSON.stringify({ 
         token, 
         password,
+        ...(username && { username }),
         ...(name && { name }),
         ...(phone && { phone })
       }),
