@@ -14,7 +14,7 @@ const LoginEmail = () => {
 
   useEffect(() => {
     if (isLoggedIn()) {
-      navigate('/manager');
+      navigate('/dashboard');
     }
   }, [navigate]);
 

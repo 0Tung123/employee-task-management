@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthenticationCard from '../components/AuthenticationCard';
-import { sendOwnerOTP, validateOwnerOTP, getUserRole } from '../API/auth';
+import { sendOwnerOTP, validateOwnerOTP, getUserRole, isLoggedIn } from '../API/auth';
 
 const LoginPhone = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -11,6 +11,12 @@ const LoginPhone = () => {
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isLoggedIn()) {
+      navigate('/dashboard');
+    }
+  }, [navigate]);
 
   const isValidPhone = (v) => /^[1-9]\d{7,14}$/.test(v);
   const sanitizePhone = (v) => v.replace(/\D/g, '').slice(0, 15);
