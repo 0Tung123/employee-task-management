@@ -31,7 +31,6 @@ Employee Task Management System is a robust platform for companies to manage emp
 
 ## Architecture
 
-![Architecture Diagram](image/architecture.png)
 
 - **Frontend:** React (Vite), communicates with backend via REST API.
 - **Backend:** Node.js, Express, Firebase Firestore, JWT authentication.
