@@ -119,7 +119,7 @@ VITE_API_BASE=http://localhost:5000
 
 ```sh
 cd backend
-npm start
+npm run dev
 ```
 
 #### Frontend
