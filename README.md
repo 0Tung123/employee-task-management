@@ -162,41 +162,43 @@ npm run dev
 
 ---
 
+
 ## Features & Screenshots
 
-All screenshots are stored in the `image/` folder. Please update these images as your UI evolves.
+All screenshots are stored in the `Screenshots/` folder. Please update these images as your UI evolves.
 
-### Login & Authentication
-![Login](image/login.png)
-*Secure login for both employees and owners.*
+### 1. Owner Login with Phone
+![Owner Login with Phone](Screenshots/Owner_login_with_phone.jpg)
 
-### Dashboard (Role-based)
-![Dashboard](image/dashboard.png)
-*Personalized dashboard for each user role.*
+### 2. Employee Login with Email
+![Employee Login with Email](Screenshots/Employee_login_with_email.jpg)
 
-### Employee Management (Owner)
-![Employee Management](image/employee-management.png)
-*Owners can view, add, edit, and remove employees.*
+### 3. Login with Username and Password
+![Login with Username and Password](Screenshots/Login_username_and_password.jpg)
 
-### Task Management
-![Task Management](image/task-management.png)
-*Assign, track, and update tasks for employees.*
+### 4. Email Verification
+![Email Verification](Screenshots/email_verify.jpg)
 
-### Messaging/Chat
-![Chat](image/chat.png)
-*Real-time chat for internal communication.*
+### 5. Phone Number Verification
+![Phone Number Verification](Screenshots/Phone_number_verify.jpg)
 
-### Profile Page
-![Profile](image/profile.png)
-*Employees can view and update their personal information.*
+### 6. Manager Employee (Owner)
+![Manager Employee](Screenshots/manager_employee.jpg)
 
-### Notifications
-![Notification](image/notification.png)
-*Instant notifications for important events.*
+### 7. Manager Task (Owner)
+![Manager Task](Screenshots/Owner_manager_task.jpg)
 
----
+### 8. Manager Task (Employee)
+![Manager Task (Employee)](Screenshots/manager_task.jpg)
 
-## API Reference
+### 9. Chat / Messaging
+![Chat](Screenshots/Chat.jpg)
+
+### 10. Profile Page
+![Profile](Screenshots/profile.jpg)
+
+### 11. Edit Profile
+![Edit Profile](Screenshots/editProfile.jpg)
 
 > All API endpoints are prefixed with `/api/`
 
