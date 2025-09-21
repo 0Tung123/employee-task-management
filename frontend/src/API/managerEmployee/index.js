@@ -1,8 +1,5 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE;
 
-// === EMPLOYEE MANAGEMENT ===
-
-// Get all employees
 export const getAllEmployees = async () => {
   const token = localStorage.getItem('token');
   const headers = {
@@ -24,7 +21,6 @@ export const getAllEmployees = async () => {
   }
 };
 
-// Get employee by ID
 export const getEmployeeById = async (id) => {
   const token = localStorage.getItem('token');
   const headers = {
@@ -47,7 +43,6 @@ export const getEmployeeById = async (id) => {
   }
 };
 
-// Create new employee
 export const createEmployee = async (employeeData) => {
   const token = localStorage.getItem('token');
   const headers = {
@@ -70,7 +65,6 @@ export const createEmployee = async (employeeData) => {
   }
 };
 
-// Update employee
 export const updateEmployee = async (id, employeeData) => {
   const token = localStorage.getItem('token');
   const headers = {
@@ -93,7 +87,6 @@ export const updateEmployee = async (id, employeeData) => {
   }
 };
 
-// Delete employee
 export const deleteEmployee = async (id) => {
   const token = localStorage.getItem('token');
   const headers = {

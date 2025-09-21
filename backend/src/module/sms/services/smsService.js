@@ -55,11 +55,8 @@ const sendSMS = async (phoneNumber, accessCode) => {
 
     await vonage.sms.send({to, from, text})
       .then(resp => {
-        console.log('Message sent successfully');
-        console.log(resp);
       })
       .catch(err => {
-        console.log('There was an error sending the messages.');
         console.error(err);
         throw err;
       });

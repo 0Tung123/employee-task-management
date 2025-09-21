@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Button from './Button';
 import Input from './Input';
+import { getAllEmployees } from '../API/owner';
 import '../styles/Message.css';
 
 const Message = () => {
@@ -24,48 +25,8 @@ const Message = () => {
   const loadMessages = async () => {
     setLoading(true);
     try {
-      // TODO: Implement message API calls
-      // For now, using mock data
-      const mockMessages = [
-        {
-          id: '1',
-          from: 'owner@company.com',
-          fromName: 'Manager',
-          to: 'john@example.com',
-          toName: 'John Doe',
-          subject: 'Project Update Required',
-          content: 'Hi John, please provide an update on the current project status.',
-          timestamp: '2024-01-03T10:30:00Z',
-          read: true,
-          type: 'sent'
-        },
-        {
-          id: '2',
-          from: 'jane@example.com',
-          fromName: 'Jane Smith',
-          to: 'owner@company.com',
-          toName: 'Manager',
-          subject: 'Leave Request',
-          content: 'Hi, I would like to request leave for next week. Please let me know if this is possible.',
-          timestamp: '2024-01-02T14:15:00Z',
-          read: false,
-          type: 'received'
-        },
-        {
-          id: '3',
-          from: 'owner@company.com',
-          fromName: 'Manager',
-          to: 'jane@example.com',
-          toName: 'Jane Smith',
-          subject: 'Re: Leave Request',
-          content: 'Your leave request has been approved. Please coordinate with your team.',
-          timestamp: '2024-01-02T16:45:00Z',
-          read: true,
-          type: 'sent'
-        }
-      ];
-      setMessages(mockMessages);
-      setMessage('Messages loaded successfully');
+      setMessages([]);
+      setMessage('No messages available. Message API integration pending.');
     } catch (error) {
       setMessage('Failed to load messages');
     }
@@ -74,15 +35,17 @@ const Message = () => {
 
   const loadEmployees = async () => {
     try {
-      // TODO: Load employees from API
-      // For now, using mock data
-      const mockEmployees = [
-        { id: '1', name: 'John Doe', email: 'john@example.com' },
-        { id: '2', name: 'Jane Smith', email: 'jane@example.com' }
-      ];
-      setEmployees(mockEmployees);
+      const response = await getAllEmployees();
+      if (response.success && response.employees) {
+        setEmployees(response.employees);
+      } else {
+        setMessage('Failed to load employees');
+        setEmployees([]);
+      }
     } catch (error) {
       console.error('Failed to load employees');
+      setMessage('Failed to load employees');
+      setEmployees([]);
     }
   };
 
@@ -97,7 +60,6 @@ const Message = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      // TODO: Implement send message API
       const newMessage = {
         id: Date.now().toString(),
         from: 'owner@company.com',
@@ -122,7 +84,6 @@ const Message = () => {
 
   const handleMarkAsRead = async (messageId) => {
     try {
-      // TODO: Implement mark as read API
       setMessages(messages.map(msg => 
         msg.id === messageId ? { ...msg, read: true } : msg
       ));
@@ -136,7 +97,6 @@ const Message = () => {
       return;
     }
     try {
-      // TODO: Implement delete message API
       setMessages(messages.filter(msg => msg.id !== messageId));
       setMessage('Message deleted successfully');
       if (selectedConversation?.id === messageId) {
@@ -189,7 +149,6 @@ const Message = () => {
         </div>
       )}
 
-      {/* Compose Message Form */}
       {showComposeForm && (
         <div className="compose-form">
           <h3>Compose New Message</h3>
@@ -247,9 +206,7 @@ const Message = () => {
         </div>
       )}
 
-      {/* Message Layout */}
       <div className="message-layout">
-        {/* Conversation List */}
         <div className="conversation-list">
           <h3>Conversations</h3>
           {Object.keys(conversations).length === 0 ? (
@@ -282,7 +239,6 @@ const Message = () => {
           )}
         </div>
 
-        {/* Message Detail */}
         <div className="message-detail">
           {selectedConversation ? (
             <div>
@@ -334,7 +290,6 @@ const Message = () => {
         </div>
       </div>
 
-      {/* Message Statistics */}
       {messages.length > 0 && (
         <div className="message-stats">
           <div className="stat-card">

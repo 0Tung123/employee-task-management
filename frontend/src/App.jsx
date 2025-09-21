@@ -13,18 +13,12 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Navigate to="/login-phone" replace />} />
-          {/* Auth routes */}
           <Route path="/login-phone" element={<LoginPhone />} />
           <Route path="/login-email" element={<LoginEmail />} />
-          {/* Setup account route */}
           <Route path="/setup-account" element={<SetupAccount />} />
-          {/* Dashboard */}
           <Route path="/dashboard" element={<Dashboard />} />
-          {/* Redirect deprecated signup routes to their login counterparts */}
           <Route path="/signup-phone" element={<Navigate to="/login-phone" replace />} />
           <Route path="/signup-email" element={<Navigate to="/login-email" replace />} />
-          {/* App routes */}
-          {/* Fallback */}
           <Route path="*" element={<Navigate to="/login-phone" replace />} />
         </Routes>
       </Router>

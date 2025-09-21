@@ -1,6 +1,5 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE;
 
-// Verify setup token
 export const verifySetupToken = async (token) => {
   const headers = {
     'Content-Type': 'application/json',
@@ -16,12 +15,10 @@ export const verifySetupToken = async (token) => {
     }
     return await response.json();
   } catch (error) {
-    console.error("Verify setup token failed:", error);
     throw error;
   }
 };
 
-// Setup employee account
 export const setupAccount = async (token, password, name, phone) => {
   const headers = {
     'Content-Type': 'application/json',
@@ -42,7 +39,6 @@ export const setupAccount = async (token, password, name, phone) => {
     }
     return await response.json();
   } catch (error) {
-    console.error("Setup account failed:", error);
     throw error;
   }
 };

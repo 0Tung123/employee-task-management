@@ -21,7 +21,6 @@ const AuthenticationCard = ({
   buttonProps = {},
   cardType = 'signin',
 }) => {
-  // Determine final message class: prefer explicit messageType, fallback to heuristic
   const derivedType = messageType || (typeof message === 'string' && message.toLowerCase().includes('success') ? 'success' : 'error');
 
   return (

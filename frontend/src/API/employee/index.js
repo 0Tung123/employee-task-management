@@ -1,8 +1,5 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE;
 
-// === EMPLOYEE PROFILE ===
-
-// Get employee profile
 export const getEmployeeProfile = async () => {
   const token = localStorage.getItem('token');
   const headers = {
@@ -24,7 +21,6 @@ export const getEmployeeProfile = async () => {
   }
 };
 
-// Get employee schedules
 export const getEmployeeSchedules = async (startDate, endDate) => {
   const token = localStorage.getItem('token');
   const headers = {

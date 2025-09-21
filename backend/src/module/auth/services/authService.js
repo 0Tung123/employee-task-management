@@ -5,21 +5,18 @@ const emailService = require('../../email/services/emailService');
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcryptjs');
 
-// Collections
 const ownersCollection = collection(db, 'owners');
 const employeesCollection = collection(db, 'employees');
 
-// Save OTP to Firebase Firestore
 const saveOTPToFirebase = async (identifier, otp, userType) => {
   try {
     const otpDoc = doc(db, 'otps', identifier);
     await setDoc(otpDoc, {
       otp: otp,
-      userType: userType, // 'owner' or 'employee'
-      expiresAt: new Date(Date.now() + 5 * 60 * 1000), // 5 minutes
+      userType: userType,
+      expiresAt: new Date(Date.now() + 5 * 60 * 1000),
       createdAt: new Date()
     });
-    console.log(`OTP saved to Firebase for ${userType}: ${identifier}`);
   } catch (error) {
     console.error('Error saving OTP to Firebase:', error);
     throw error;
@@ -45,11 +42,9 @@ const sendSMSOTP = async (phone, otp) => {
   }
 };
 
-// Send Email OTP (reuse existing email service)
 const sendEmailOTP = async (email, otp) => {
   try {
     await emailService.sendOTPEmail(email, otp);
-    console.log(`Email OTP sent successfully to ${email}`);
   } catch (error) {
     console.error('Error sending Email OTP:', error);
     throw error;
@@ -97,7 +92,6 @@ const authenticateUser = async (identifier, userType) => {
       existingUser = await findOwnerByPhone(identifier);
     } else if (userType === 'employee') {
       existingUser = await findEmployeeByEmail(identifier);
-      // Check if employee account is setup
       if (existingUser && existingUser.status === 'pending') {
         throw new Error('Account setup is required. Please check your email for setup instructions.');
       }

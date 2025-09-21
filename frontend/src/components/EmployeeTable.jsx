@@ -25,13 +25,13 @@ const EmployeeTable = ({ employees, onEdit, onDelete }) => {
             <td className="center">
               <button
                 className="action-button edit"
-                onClick={() => onEdit(employee.id)}
+                onClick={() => onEdit(employee)}
               >
                 Edit
               </button>
               <button
                 className="action-button delete"
-                onClick={() => onDelete(employee.id)}
+                onClick={() => onDelete(employee)}
               >
                 Delete
               </button>

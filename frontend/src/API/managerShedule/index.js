@@ -1,6 +1,5 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE;
 
-// Set schedule for employee
 export const setSchedule = async (scheduleData) => {
   const token = localStorage.getItem('token');
   const headers = {
@@ -23,7 +22,6 @@ export const setSchedule = async (scheduleData) => {
   }
 };
 
-// Get schedules for employee
 export const getEmployeeSchedules = async (employeeId, startDate, endDate) => {
   const token = localStorage.getItem('token');
   const headers = {

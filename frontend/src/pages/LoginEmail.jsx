@@ -54,7 +54,6 @@ const LoginEmail = () => {
     try {
       const data = await validateEmployeeOTP(email, accessCode);
       if (data.success) {
-        // Only dashboard route exists
         navigate('/dashboard');
       } else {
         setMessage(data.error || 'Invalid code');

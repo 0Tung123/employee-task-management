@@ -15,7 +15,6 @@ const createNewAccessCode = async (req, res) => {
 
     try {
       await smsService.sendSMS(phoneNumber, accessCode);
-      console.log(`SMS sent successfully to ${phoneNumber}`);
       res.json({ 
         accessCode,
         message: "SMS sent successfully" 

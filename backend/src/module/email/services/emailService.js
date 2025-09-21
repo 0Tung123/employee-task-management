@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+const templateLoader = require('../../../templates/email/templateLoader');
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
@@ -21,7 +22,6 @@ const sendEmail = async (to, subject, text, html) => {
     };
 
     const info = await transporter.sendMail(mailOptions);
-    console.log('Email sent:', info.messageId);
     return info;
   } catch (error) {
     console.error('Error sending email:', error);
@@ -32,28 +32,32 @@ const sendEmail = async (to, subject, text, html) => {
 
 
 const sendOTPEmail = async (email, otp) => {
-  const subject = 'Your OTP Code - Employee Login';
-  const text = `Your OTP code for login is: ${otp}\n\nThis code will expire in 5 minutes.\n\nRegards,\nEmployee Management Team`;
-  const html = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h2>Employee Login OTP</h2>
-      <p>Your OTP code for login is:</p>
-      <div style="background-color: #f0f0f0; padding: 20px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 3px; margin: 20px 0;">
-        ${otp}
-      </div>
-      <p>This code will expire in 5 minutes.</p>
-      <p>If you didn't request this code, please ignore this email.</p>
-      <br>
-      <p>Regards,<br>Employee Management Team</p>
-    </div>
-  `;
+  const subject = 'Your Verification Code - Employee Management System';
+  const text = `Your OTP code for login is: ${otp}\n\nThis code will expire in 10 minutes.\n\nRegards,\nEmployee Management Team`;
+  
+  const html = templateLoader.getOTPTemplate(otp);
 
   await sendEmail(email, subject, text, html);
 };
 
 
 
+const sendWelcomeEmail = async (email, name, setupToken) => {
+  const subject = 'Welcome to Employee Management - Setup Your Account';
+  const setupUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/setup-account?token=${setupToken}`;
+  const text = `Welcome ${name}!\n\nYou have been added to the Employee Management system. Please click the link below to setup your account:\n\n${setupUrl}\n\nThis link will expire in 24 hours.\n\nRegards,\nEmployee Management Team`;
+  
+  const html = templateLoader.getWelcomeTemplate({
+    name: name,
+    email: email,
+    setupUrl: setupUrl
+  });
+
+  await sendEmail(email, subject, text, html);
+};
+
 module.exports = {
   sendEmail,
-  sendOTPEmail
+  sendOTPEmail,
+  sendWelcomeEmail
 };

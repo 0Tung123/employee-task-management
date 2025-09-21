@@ -65,7 +65,6 @@ const createEmployee = async (employeeData) => {
     const docRef = doc(employeesCollection, employeeId);
     await setDoc(docRef, newEmployee);
     await sendSetupAccountEmail(newEmployee);
-    // Return only success and employeeId as requested
     return { success: true, employeeId: employeeId };
   } catch (error) {
     throw error;
@@ -100,51 +99,7 @@ const deleteEmployee = async (employeeId) => {
     const docRef = doc(employeesCollection, employeeId);
     await deleteDoc(docRef);
     await deleteEmployeeSchedules(employeeId);
-    return { success: true, message: 'Employee deleted successfully' };
-  } catch (error) {
-    throw error;
-  }
-};
-
-const setEmployeeSchedule = async (employeeId, scheduleData) => {
-  try {
-    await getEmployeeById(employeeId);
-    const scheduleId = uuidv4();
-    const schedule = {
-      id: scheduleId,
-      employeeId: employeeId,
-      date: scheduleData.date,
-      startTime: scheduleData.startTime,
-      endTime: scheduleData.endTime,
-      breakDuration: scheduleData.breakDuration || 0,
-      notes: scheduleData.notes || '',
-      createdAt: new Date(),
-      updatedAt: new Date()
-    };
-    const docRef = doc(schedulesCollection, scheduleId);
-    await setDoc(docRef, schedule);
-    return schedule;
-  } catch (error) {
-    throw error;
-  }
-};
-
-const getEmployeeSchedules = async (employeeId, startDate, endDate) => {
-  try {
-    let q = query(schedulesCollection, where('employeeId', '==', employeeId));
-    if (startDate) {
-      q = query(q, where('date', '>=', startDate));
-    }
-    if (endDate) {
-      q = query(q, where('date', '<=', endDate));
-    }
-    q = query(q, orderBy('date', 'asc'));
-    const querySnapshot = await getDocs(q);
-    const schedules = [];
-    querySnapshot.forEach((doc) => {
-      schedules.push({ id: doc.id, ...doc.data() });
-    });
-    return schedules;
+    return { success: true };
   } catch (error) {
     throw error;
   }
@@ -154,11 +109,63 @@ const findEmployeeByEmail = async (email) => {
   try {
     const q = query(employeesCollection, where('email', '==', email));
     const querySnapshot = await getDocs(q);
-    if (querySnapshot.empty) {
-      return null;
+    if (!querySnapshot.empty) {
+      const doc = querySnapshot.docs[0];
+      return { id: doc.id, ...doc.data() };
     }
-    const doc = querySnapshot.docs[0];
-    return { id: doc.id, ...doc.data() };
+    return null;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const sendSetupAccountEmail = async (employee) => {
+  try {
+    await emailService.sendWelcomeEmail(employee.email, employee.name, employee.verificationToken);
+  } catch (error) {
+    console.error('Failed to send setup account email:', error);
+  }
+};
+
+const findEmployeeByToken = async (verificationToken) => {
+  try {
+    const q = query(employeesCollection, where('verificationToken', '==', verificationToken));
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      const doc = querySnapshot.docs[0];
+      return { id: doc.id, ...doc.data() };
+    }
+    return null;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const setupAccount = async (token, password, username) => {
+  try {
+    const employee = await findEmployeeByToken(token);
+    if (!employee) {
+      throw new Error('Invalid or expired token');
+    }
+
+    if (employee.tokenExpiresAt.toDate() < new Date()) {
+      throw new Error('Token has expired');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const docRef = doc(employeesCollection, employee.id);
+    await updateDoc(docRef, {
+      password: hashedPassword,
+      username: username,
+      isVerified: true,
+      isActive: true,
+      status: 'active',
+      verificationToken: null,
+      tokenExpiresAt: null,
+      updatedAt: new Date()
+    });
+
+    return { success: true, message: 'Account setup completed successfully' };
   } catch (error) {
     throw error;
   }
@@ -175,119 +182,13 @@ const deleteEmployeeSchedules = async (employeeId) => {
   }
 };
 
-const sendSetupAccountEmail = async (employee) => {
-  try {
-    const subject = 'Welcome to Employee Task Management System - Setup Your Account';
-    const setupLink = `${process.env.FRONTEND_URL}/setup-account?token=${employee.verificationToken}`;
-    const message = `
-      <h2>Welcome ${employee.name}!</h2>
-      <p>Your account has been created in our Employee Task Management System.</p>
-      
-      <p>To complete your account setup and start using the system, please click the link below:</p>
-      
-      <div style="text-align: center; margin: 30px 0;">
-        <a href="${setupLink}" 
-           style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
-          Setup My Account
-        </a>
-      </div>
-      
-      <p>Or copy and paste this link into your browser:</p>
-      <p style="word-break: break-all; background-color: #f8f9fa; padding: 10px; border-radius: 3px;">
-        ${setupLink}
-      </p>
-      
-      <p><strong>Important:</strong> This link will expire in 7 days for security reasons.</p>
-      
-      <p>If you have any questions, please contact your manager.</p>
-    `;
-    await emailService.sendEmail(employee.email, subject, message);
-  } catch (error) {
-    console.error('Failed to send setup account email:', error);
-  }
-};
-
-const findEmployeeByToken = async (verificationToken) => {
-  try {
-    const q = query(employeesCollection, where('verificationToken', '==', verificationToken));
-    const querySnapshot = await getDocs(q);
-    if (querySnapshot.empty) {
-      return null;
-    }
-    const doc = querySnapshot.docs[0];
-    return { id: doc.id, ...doc.data() };
-  } catch (error) {
-    throw error;
-  }
-};
-
-const verifyEmployeeToken = async (verificationToken) => {
-  try {
-    const employee = await findEmployeeByToken(verificationToken);
-    if (!employee) {
-      throw new Error('Invalid verification token');
-    }
-    
-    // Check if token is expired
-    if (new Date() > employee.tokenExpiresAt.toDate()) {
-      throw new Error('Verification token has expired');
-    }
-    
-    // Check if already verified
-    if (employee.status !== 'pending') {
-      throw new Error('Account has already been setup');
-    }
-    
-    return employee;
-  } catch (error) {
-    throw error;
-  }
-};
-
-const setupEmployeeAccount = async (verificationToken, setupData) => {
-  try {
-    const employee = await verifyEmployeeToken(verificationToken);
-    
-    // Hash the new password
-    const hashedPassword = await bcrypt.hash(setupData.password, 10);
-    
-    // Update employee status and remove verification token
-    const docRef = doc(employeesCollection, employee.id);
-    const updatePayload = {
-      password: hashedPassword,
-      status: 'active',
-      isActive: true,
-      isVerified: true,
-      verificationToken: null,
-      tokenExpiresAt: null,
-      setupCompletedAt: new Date(),
-      updatedAt: new Date()
-    };
-    
-    // Update additional info if provided
-    if (setupData.phone) updatePayload.phone = setupData.phone.trim();
-    if (setupData.name) updatePayload.name = setupData.name.trim();
-    
-    await updateDoc(docRef, updatePayload);
-    
-    // Return employee data without sensitive info
-    const updatedEmployee = await getEmployeeById(employee.id);
-    return updatedEmployee;
-  } catch (error) {
-    throw error;
-  }
-};
-
 module.exports = {
   getEmployeeById,
   getAllEmployees,
   createEmployee,
   updateEmployee,
   deleteEmployee,
-  setEmployeeSchedule,
-  getEmployeeSchedules,
   findEmployeeByEmail,
   findEmployeeByToken,
-  verifyEmployeeToken,
-  setupEmployeeAccount
+  setupAccount
 };

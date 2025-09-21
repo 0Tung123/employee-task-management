@@ -1,6 +1,5 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE;
 
-// Get all employees
 export const getAllEmployees = async () => {
   try {
     const token = localStorage.getItem('token');
@@ -20,7 +19,6 @@ export const getAllEmployees = async () => {
   }
 };
 
-// Create employee
 export const createEmployee = async (employeeData) => {
   try {
     const token = localStorage.getItem('token');
@@ -41,7 +39,6 @@ export const createEmployee = async (employeeData) => {
   }
 };
 
-// Update employee
 export const updateEmployee = async (employeeId, employeeData) => {
   try {
     const token = localStorage.getItem('token');
@@ -62,7 +59,6 @@ export const updateEmployee = async (employeeId, employeeData) => {
   }
 };
 
-// Delete employee
 export const deleteEmployee = async (employeeId) => {
   try {
     const token = localStorage.getItem('token');
@@ -83,7 +79,6 @@ export const deleteEmployee = async (employeeId) => {
   }
 };
 
-// Get employee by ID
 export const getEmployee = async (employeeId) => {
   try {
     const token = localStorage.getItem('token');
@@ -104,7 +99,6 @@ export const getEmployee = async (employeeId) => {
   }
 };
 
-// Set employee schedule
 export const setEmployeeSchedule = async (employeeId, scheduleData) => {
   try {
     const token = localStorage.getItem('token');
@@ -125,7 +119,6 @@ export const setEmployeeSchedule = async (employeeId, scheduleData) => {
   }
 };
 
-// Get employee schedules
 export const getEmployeeSchedules = async (employeeId) => {
   try {
     const token = localStorage.getItem('token');

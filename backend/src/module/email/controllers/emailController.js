@@ -1,6 +1,5 @@
 const emailService = require('../services/emailService');
 
-// Temporary OTP storage (in production, use Redis or Database)
 const otpStorage = new Map();
 
 const sendOTP = async (req, res) => {
@@ -13,7 +12,6 @@ const sendOTP = async (req, res) => {
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     
-    // Store OTP with expiration time (5 minutes)
     otpStorage.set(email, {
       otp: otp,
       expiresAt: Date.now() + 5 * 60 * 1000 // 5 minutes
@@ -48,18 +46,15 @@ const verifyOTP = async (req, res) => {
       return res.status(400).json({ error: 'No OTP found for this email' });
     }
 
-    // Check if OTP expired
     if (Date.now() > storedData.expiresAt) {
       otpStorage.delete(email);
       return res.status(400).json({ error: 'OTP has expired' });
     }
 
-    // Check if OTP matches
     if (storedData.otp !== otp) {
       return res.status(400).json({ error: 'Invalid OTP' });
     }
 
-    // OTP is valid, remove from storage
     otpStorage.delete(email);
     
     res.json({ 
