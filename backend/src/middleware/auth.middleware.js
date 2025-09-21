@@ -45,8 +45,8 @@ const requireRole = (allowedRoles) => {
 };
 
 const requireOwner = requireRole(['Owner']);
-const requireEmployee = requireRole(['Employee']);
-const requireAnyUser = requireRole(['Owner', 'Employee']);
+const requireEmployee = requireRole(['employee']);
+const requireAnyUser = requireRole(['Owner', 'employee']);
 
 module.exports = {
   authenticateToken,

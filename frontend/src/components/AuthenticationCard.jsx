@@ -17,6 +17,7 @@ const AuthenticationCard = ({
   bottomText,
   linkText,
   onLinkClick,
+  footerText,
   inputProps = {},
   buttonProps = {},
   cardType = 'signin',
@@ -52,10 +53,10 @@ const AuthenticationCard = ({
       )}
       {bottomText && <p className="bottom-text">{bottomText}</p>}
 
-      {cardType === 'signin' && (bottomText || linkText) && (
+      {cardType === 'signin' && linkText && (
         <div className="auth-card-footer">
-          <span className="footer-text">Don't having account?</span>
-          {linkText && <a href="#" onClick={onLinkClick}>Sign up</a>}
+          {footerText && <span className="footer-text">{footerText}</span>}
+          <a href="#" onClick={onLinkClick}>{linkText}</a>
         </div>
       )}
     </div>

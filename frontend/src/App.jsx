@@ -5,6 +5,7 @@ import LoginEmail from './pages/LoginEmail';
 import EmployeeLogin from './pages/EmployeeLogin';
 import SetupAccount from './pages/SetupAccount';
 import Dashboard from './pages/Dashboard';
+import Profile from './pages/Profile';
 
 import './styles/App.css';
 
@@ -19,6 +20,7 @@ function App() {
           <Route path="/employee-login" element={<EmployeeLogin />} />
           <Route path="/setup-account" element={<SetupAccount />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/signup-phone" element={<Navigate to="/login-phone" replace />} />
           <Route path="/signup-email" element={<Navigate to="/login-email" replace />} />
           <Route path="*" element={<Navigate to="/login-phone" replace />} />

@@ -45,3 +45,25 @@ export const getEmployeeSchedules = async (startDate, endDate) => {
     throw error;
   }
 };
+
+export const updateEmployeeProfile = async (profileData) => {
+  const token = localStorage.getItem('token');
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(token && { Authorization: `Bearer ${token}` }),
+  };
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/employee/profile`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify(profileData),
+    });
+    if (!response.ok) {
+      throw new Error(await response.text());
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Update employee profile failed:", error);
+    throw error;
+  }
+};

@@ -39,7 +39,7 @@ const getAllEmployees = async () => {
         delete employeeData.password;
         
 
-        employeeData.role = 'Employee';
+  employeeData.role = 'employee';
         
         employees.push(employeeData);
       }
@@ -71,7 +71,7 @@ const createEmployee = async (employeeData) => {
       name: employeeData.name,
       email: employeeData.email,
       phone: employeeData.phone || '',
-      role: employeeData.role || 'Employee',
+  role: employeeData.role || 'employee',
       department: employeeData.department || '',
       position: employeeData.position || '',
       status: 'pending', // Status pending
@@ -127,7 +127,6 @@ const deleteEmployee = async (employeeId) => {
 
 const findEmployeeByEmail = async (email) => {
   try {
-    // Thử tìm exact match trước
     let q = query(employeesCollection, where('email', '==', email));
     let querySnapshot = await getDocs(q);
     
@@ -136,8 +135,6 @@ const findEmployeeByEmail = async (email) => {
       return { id: doc.id, ...doc.data() };
     }
     
-    // Nếu không tìm thấy exact match, thử case-insensitive search
-    // Lấy tất cả employees và filter bằng JavaScript
     const allEmployeesQuery = await getDocs(employeesCollection);
     for (const doc of allEmployeesQuery.docs) {
       const employee = doc.data();
@@ -162,9 +159,6 @@ const findEmployeeByUsername = async (username) => {
       const doc = querySnapshot.docs[0];
       return { id: doc.id, ...doc.data() };
     }
-    
-    // Nếu không tìm thấy exact match, thử case-insensitive search
-    // Lấy tất cả employees và filter bằng JavaScript
     const allEmployeesQuery = await getDocs(employeesCollection);
     for (const doc of allEmployeesQuery.docs) {
       const employee = doc.data();

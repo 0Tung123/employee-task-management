@@ -7,8 +7,9 @@
   margin: 0 auto;
   box-sizing: border-box;
   position: relative;
-  overflow: visible; /* Cho phép nội dung tràn ra ngoài nếu cần */
-  padding-bottom: 40px; /* Thêm padding bottom */
+  overflow: visible;
+  padding-bottom: 40px;
+  top:30%;
 }
 
 .setup-card-title {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthenticationCard from '../components/AuthenticationCard';
 import { sendOwnerOTP, validateOwnerOTP, getUserRole, isLoggedIn } from '../API/auth';
@@ -73,8 +73,8 @@ const LoginPhone = () => {
   if (step === 1) {
     return (
       <AuthenticationCard
-        title="Sign In"
-        subtitle="Please enter your phone to sign in"
+        title="Owner Sign In"
+        subtitle="Enter your phone number for secure access"
         inputType="text"
         inputPlaceholder="Your Phone Number"
         inputValue={phoneNumber}
@@ -83,9 +83,10 @@ const LoginPhone = () => {
         onButtonClick={handleSendCode}
         message={message}
         messageType={messageType}
-        bottomText="passwordless authentication methods."
-        linkText="Don’t having account? Sign up"
-        onLinkClick={() => navigate('/signup-phone')}
+        bottomText="Format: [country code][phone number], example: 849xxxxxxxx"
+        footerText="Are you an employee?"
+        linkText="Sign in"
+        onLinkClick={() => navigate('/employee-login')}
         buttonProps={{ disabled: loading || !phoneValid }}
         cardType="signin"
       />

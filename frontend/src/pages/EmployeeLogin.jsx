@@ -67,19 +67,19 @@ const EmployeeLogin = () => {
     >
       <div>
         <div className="welcome-text">
-          Welcome back!<br />
-          Please sign in to your account.
+          Welcome back, Employee!<br />
+          Sign in with your username and password.
         </div>
 
         <div className="input-group">
-          <label htmlFor="usernameOrEmail">Username or Email *</label>
+          <label htmlFor="usernameOrEmail">Username *</label>
           <input
             id="usernameOrEmail"
             type="text"
             value={usernameOrEmail}
             onChange={(e) => setUsernameOrEmail(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Enter your username or email"
+            placeholder="Enter your username"
             disabled={loading}
             required
           />
@@ -109,14 +109,21 @@ const EmployeeLogin = () => {
 
         <div className="auth-links">
           <p>
-            Don't have an account? Contact your administrator.
+            Need help? Contact your administrator.
           </p>
           <p>
             <span 
               className="link-text" 
               onClick={() => navigate('/login-email')}
             >
-              Use OTP Login instead
+              Use Email OTP instead
+            </span>
+            {' | '}
+            <span 
+              className="link-text" 
+              onClick={() => navigate('/login-phone')}
+            >
+              Owner Login
             </span>
           </p>
         </div>

@@ -23,6 +23,45 @@ const GetMyProfile = async (req, res) => {
   }
 };
 
+const UpdateMyProfile = async (req, res) => {
+  try {
+    const employeeId = req.user.userId;
+    const { name, email, phone } = req.body;
+    
+    // Validate required fields
+    if (!name || !email) {
+      return res.status(400).json({
+        success: false,
+        error: 'Name and email are required'
+      });
+    }
+
+    // Update employee profile
+    const updatedEmployee = await employeeService.updateEmployee(employeeId, {
+      name,
+      email,
+      phone
+    });
+
+    res.json({
+      success: true,
+      message: 'Profile updated successfully',
+      profile: updatedEmployee
+    });
+  } catch (error) {
+    if (error.message === 'Employee not found') {
+      return res.status(404).json({
+        success: false,
+        error: 'Profile not found'
+      });
+    }
+    res.status(500).json({
+      success: false,
+      error: 'Failed to update profile'
+    });
+  }
+};
+
 const GetMySchedules = async (req, res) => {
   try {
     const employeeId = req.user.userId;
@@ -44,5 +83,6 @@ const GetMySchedules = async (req, res) => {
 
 module.exports = {
   GetMyProfile,
+  UpdateMyProfile,
   GetMySchedules
 };

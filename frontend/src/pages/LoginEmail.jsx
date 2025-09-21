@@ -69,8 +69,8 @@ const LoginEmail = () => {
   if (step === 1) {
     return (
       <AuthenticationCard
-        title="Sign In"
-        subtitle="Please enter your email to sign in"
+        title="Employee Sign In"
+        subtitle="Enter your email address for secure access"
         inputType="email"
         inputPlaceholder="Your Email Address"
         inputValue={email}
@@ -80,8 +80,9 @@ const LoginEmail = () => {
         message={message}
         messageType={messageType}
         bottomText="passwordless authentication methods."
-        linkText="Don’t having account? Sign up"
-        onLinkClick={() => navigate('/login-email')}
+        footerText="Login with Password?"
+        linkText="Sign in"
+        onLinkClick={() => navigate('/employee-login')}
         buttonProps={{ disabled: loading || !isValidEmail(email.trim()) }}
         cardType="signin"
       />
@@ -103,7 +104,7 @@ const LoginEmail = () => {
       linkText="Code not receive? Send again"
       onLinkClick={handleSendCode}
       buttonProps={{ disabled: loading }}
-      cardType="signup"
+      cardType="signin"
     />
   );
 };

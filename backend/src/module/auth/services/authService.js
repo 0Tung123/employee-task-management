@@ -135,7 +135,7 @@ const createNewUser = async (identifier, userType) => {
         name: 'Employee',
         email: identifier,
         phone: '',
-        role: 'Employee'
+        role: 'employee'
       };
       userRecord = await createEmployee(userData);
     }

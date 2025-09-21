@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, Search, User, ChevronDown, Users, UserPlus, Calendar, BarChart3 } from 'lucide-react';
+import { Bell, Search, User, ChevronDown, Users, UserPlus, Calendar, BarChart3, Settings, LogOut } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import EmployeeTable from '../components/EmployeeTable';
 import EmployeeModal from '../components/EmployeeModal';
@@ -58,6 +58,20 @@ const Dashboard = () => {
 
     initializeUser();
   }, [navigate]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isDropdownOpen && !event.target.closest('.avatar-dropdown-container')) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -168,9 +182,15 @@ const Dashboard = () => {
   };
 
   const handleLogout = () => {
+    setIsDropdownOpen(false);
     logout();
     showSuccess('Logged out successfully');
     navigate('/login-email');
+  };
+
+  const handleProfile = () => {
+    setIsDropdownOpen(false);
+    navigate('/profile');
   };
 
   const handleSectionChange = (section) => {
@@ -203,9 +223,6 @@ const Dashboard = () => {
               </p>
             </div>
             <div className="header-actions">
-              <button className="header-btn">
-                <Bell size={20} />
-              </button>
               <div className="avatar-dropdown-container">
                 <button className="avatar-btn" onClick={toggleDropdown}>
                   <User size={24} />
@@ -213,8 +230,27 @@ const Dashboard = () => {
                 </button>
                 {isDropdownOpen && (
                   <div className="dropdown-menu">
-                    <button className="dropdown-item" onClick={handleLogout}>
-                      Logout
+                    <div className="dropdown-header">
+                      <div className="dropdown-user-info">
+                        <div className="dropdown-avatar">
+                          <User size={20} />
+                        </div>
+                        <div className="dropdown-user-details">
+                          <p className="dropdown-user-name">{userData?.name || 'User'}</p>
+                          <p className="dropdown-user-role">{userData?.role || 'Role'}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="dropdown-divider"></div>
+                    {userData?.role === 'employee' && (
+                      <button className="dropdown-item" onClick={handleProfile}>
+                        <Settings size={16} />
+                        <span>Profile</span>
+                      </button>
+                    )}
+                    <button className="dropdown-item logout-item" onClick={handleLogout}>
+                      <LogOut size={16} />
+                      <span>Logout</span>
                     </button>
                   </div>
                 )}

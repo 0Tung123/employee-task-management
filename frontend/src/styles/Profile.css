@@ -1,0 +1,249 @@
+/* Profile Container */
+.profile-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-loading,
+.profile-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  color: white;
+  text-align: center;
+}
+
+.profile-loading p,
+.profile-error p {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+
+/* Profile Header */
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.back-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.profile-header h1 {
+  color: white;
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Profile Content */
+.profile-content {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.profile-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  width: 100%;
+  max-width: 600px;
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Profile Avatar Section */
+.profile-avatar {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 3rem 2rem;
+  text-align: center;
+  color: white;
+}
+
+.avatar-circle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+}
+
+.profile-avatar h2 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.profile-role {
+  margin: 0;
+  font-size: 1rem;
+  opacity: 0.9;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.25rem 1rem;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+/* Profile Form */
+.profile-form {
+  padding: 2rem;
+}
+
+.form-section h3 {
+  color: #374151;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0 0 1.5rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #374151;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.form-group label svg {
+  color: #6b7280;
+}
+
+/* Input Styles for Profile */
+.profile-form .input-wrapper input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.profile-form .input-wrapper input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.profile-form .input-wrapper input:disabled {
+  background: #f9fafb;
+  color: #6b7280;
+  cursor: not-allowed;
+}
+
+/* Form Actions */
+.form-actions {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.edit-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.edit-actions .button {
+  min-width: 120px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .profile-container {
+    padding: 1rem;
+  }
+  
+  .profile-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .profile-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .profile-avatar {
+    padding: 2rem 1rem;
+  }
+  
+  .profile-form {
+    padding: 1.5rem;
+  }
+  
+  .edit-actions {
+    flex-direction: column;
+  }
+  
+  .edit-actions button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-container {
+    padding: 0.5rem;
+  }
+  
+  .back-button {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+  
+  .profile-avatar h2 {
+    font-size: 1.5rem;
+  }
+  
+  .avatar-circle {
+    width: 80px;
+    height: 80px;
+  }
+}
