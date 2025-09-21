@@ -31,6 +31,7 @@ Employee Task Management System is a robust platform for companies to manage emp
 
 ## Architecture
 
+
 - **Frontend:** React (Vite), communicates with backend via REST API.
 - **Backend:** Node.js, Express, Firebase Firestore, JWT authentication.
 - **Realtime:** WebSocket/Socket.io for chat and notifications.
@@ -118,7 +119,7 @@ VITE_API_BASE=http://localhost:5000
 
 ```sh
 cd backend
-npm start
+npm run dev
 ```
 
 #### Frontend
